@@ -1,6 +1,6 @@
 package com.hjj.xiantao.exception;
 
-import com.hjj.homieMatching.common.ErrorCode;
+import com.hjj.xiantao.common.ErrorCode;
 
 /**
  * 自定义异常

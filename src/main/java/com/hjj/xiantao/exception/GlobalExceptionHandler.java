@@ -1,7 +1,8 @@
 package com.hjj.xiantao.exception;
-import com.hjj.homieMatching.common.BaseResponse;
-import com.hjj.homieMatching.common.ErrorCode;
-import com.hjj.homieMatching.common.ResultUtils;
+
+import com.hjj.xiantao.common.BaseResponse;
+import com.hjj.xiantao.common.ErrorCode;
+import com.hjj.xiantao.common.ResultUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
