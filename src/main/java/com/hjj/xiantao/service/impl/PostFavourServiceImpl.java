@@ -1,7 +1,7 @@
 package com.hjj.xiantao.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.hjj.xiantao.model.domain.domain.PostFavour;
+import com.hjj.xiantao.model.domain.PostFavour;
 import com.hjj.xiantao.service.PostFavourService;
 import com.hjj.xiantao.mapper.PostFavourMapper;
 import org.springframework.stereotype.Service;

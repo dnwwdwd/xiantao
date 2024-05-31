@@ -1,6 +1,6 @@
 package com.hjj.xiantao.mapper;
 
-import com.hjj.xiantao.model.domain.domain.PostThumb;
+import com.hjj.xiantao.model.domain.PostThumb;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

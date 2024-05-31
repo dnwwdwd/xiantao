@@ -1,6 +1,6 @@
 package com.hjj.xiantao.service;
 
-import com.hjj.xiantao.model.domain.domain.PostThumb;
+import com.hjj.xiantao.model.domain.PostThumb;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**

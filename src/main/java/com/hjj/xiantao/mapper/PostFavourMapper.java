@@ -1,6 +1,6 @@
 package com.hjj.xiantao.mapper;
 
-import com.hjj.xiantao.model.domain.domain.PostFavour;
+import com.hjj.xiantao.model.domain.PostFavour;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

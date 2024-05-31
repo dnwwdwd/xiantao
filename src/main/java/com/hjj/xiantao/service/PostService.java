@@ -1,7 +1,13 @@
 package com.hjj.xiantao.service;
 
-import com.hjj.xiantao.model.domain.domain.Post;
+import com.hjj.xiantao.model.domain.Post;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hjj.xiantao.model.request.DeleteRequest;
+import com.hjj.xiantao.model.request.post.PostAddRequest;
+import com.hjj.xiantao.model.vo.PostVO;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
 * @author 何佳骏
@@ -10,4 +16,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface PostService extends IService<Post> {
 
+    Long addPost(PostAddRequest postAddRequest, HttpServletRequest request);
+
+    Boolean deletePost(DeleteRequest deleteRequest, HttpServletRequest request);
+
+    Boolean deletePostByMySelf(DeleteRequest deleteRequest, HttpServletRequest request);
+
+    List<PostVO> recommendPosts(long pageNum, long pageSize, HttpServletRequest request);
 }

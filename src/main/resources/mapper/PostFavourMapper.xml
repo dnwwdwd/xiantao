@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hjj.xiantao.mapper.PostFavourMapper">
 
-    <resultMap id="BaseResultMap" type="com.hjj.xiantao.model.domain.domain.PostFavour">
+    <resultMap id="BaseResultMap" type="com.hjj.xiantao.model.domain.PostFavour">
             <id property="id" column="id" jdbcType="BIGINT"/>
             <result property="postId" column="postId" jdbcType="BIGINT"/>
             <result property="userId" column="userId" jdbcType="BIGINT"/>

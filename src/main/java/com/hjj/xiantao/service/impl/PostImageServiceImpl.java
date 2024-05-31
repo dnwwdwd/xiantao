@@ -1,7 +1,7 @@
 package com.hjj.xiantao.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.hjj.xiantao.model.domain.domain.PostImage;
+import com.hjj.xiantao.model.domain.PostImage;
 import com.hjj.xiantao.service.PostImageService;
 import com.hjj.xiantao.mapper.PostImageMapper;
 import org.springframework.stereotype.Service;

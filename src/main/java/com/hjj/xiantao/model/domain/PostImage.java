@@ -1,4 +1,4 @@
-package com.hjj.xiantao.model.domain.domain;
+package com.hjj.xiantao.model.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -9,12 +9,12 @@ import java.util.Date;
 import lombok.Data;
 
 /**
- * 帖子
- * @TableName post
+ * 帖子图片
+ * @TableName post_image
  */
-@TableName(value ="post")
+@TableName(value ="post_image")
 @Data
-public class Post implements Serializable {
+public class PostImage implements Serializable {
     /**
      * id
      */
@@ -22,34 +22,19 @@ public class Post implements Serializable {
     private Long id;
 
     /**
-     * 标题
+     * 帖子 id
      */
-    private String title;
-
-    /**
-     * 内容
-     */
-    private String content;
-
-    /**
-     * 标签列表（json 数组）
-     */
-    private String tags;
-
-    /**
-     * 点赞数
-     */
-    private Integer thumbNum;
-
-    /**
-     * 收藏数
-     */
-    private Integer favourNum;
+    private Long postId;
 
     /**
      * 创建用户 id
      */
     private Long userId;
+
+    /**
+     * 帖子的图片
+     */
+    private String url;
 
     /**
      * 创建时间
@@ -60,11 +45,6 @@ public class Post implements Serializable {
      * 更新时间
      */
     private Date updateTime;
-
-    /**
-     * 是否删除
-     */
-    private Integer isDelete;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

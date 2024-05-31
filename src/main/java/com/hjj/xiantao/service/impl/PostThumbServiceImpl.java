@@ -1,7 +1,7 @@
 package com.hjj.xiantao.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.hjj.xiantao.model.domain.domain.PostThumb;
+import com.hjj.xiantao.model.domain.PostThumb;
 import com.hjj.xiantao.service.PostThumbService;
 import com.hjj.xiantao.mapper.PostThumbMapper;
 import org.springframework.stereotype.Service;

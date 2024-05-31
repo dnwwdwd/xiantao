@@ -5,18 +5,17 @@ import com.hjj.xiantao.common.BaseResponse;
 import com.hjj.xiantao.common.ErrorCode;
 import com.hjj.xiantao.common.ResultUtils;
 import com.hjj.xiantao.exception.BusinessException;
-import com.hjj.xiantao.model.domain.User;
 import com.hjj.xiantao.model.request.user.UserLoginRequest;
+import com.hjj.xiantao.model.request.user.UserQueryRequest;
 import com.hjj.xiantao.model.request.user.UserRegisterRequest;
 import com.hjj.xiantao.model.vo.SafetyUser;
+import com.hjj.xiantao.model.vo.UserVO;
 import com.hjj.xiantao.service.UserService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -28,7 +27,7 @@ public class UserController {
     @PostMapping("/login")
     public BaseResponse<SafetyUser> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
         if (userLoginRequest == null) {
-            throw new BusinessException(ErrorCode.NULL_ERROR);
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         String userAccount = userLoginRequest.getUserAccount();
         String userPassword = userLoginRequest.getUserPassword();
@@ -42,7 +41,7 @@ public class UserController {
     @PostMapping("/register")
     public BaseResponse<Long> userRegister(@RequestBody UserRegisterRequest userRegisterRequest, HttpServletRequest request) {
         if (userRegisterRequest == null) {
-            throw new BusinessException(ErrorCode.NULL_ERROR);
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         String userAccount = userRegisterRequest.getUserAccount();
         String userPassword = userRegisterRequest.getUserPassword();
@@ -54,5 +53,20 @@ public class UserController {
         return ResultUtils.success(id);
     }
 
+    @PostMapping("/logout")
+    public BaseResponse<Boolean> userLogout(HttpServletRequest request) {
+        Boolean b = userService.userLogout(request);
+        return ResultUtils.success(b);
+    }
+
+    @PostMapping("/search")
+    public BaseResponse<List<UserVO>> searchUsers(@RequestBody UserQueryRequest userQueryRequest,
+                                                  HttpServletRequest request) {
+        if (userQueryRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        List<UserVO> userVOList= userService.searchUsers(userQueryRequest, request);
+        return ResultUtils.success(userVOList);
+    }
 
 }

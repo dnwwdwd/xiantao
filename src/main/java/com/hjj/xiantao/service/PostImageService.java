@@ -1,6 +1,6 @@
 package com.hjj.xiantao.service;
 
-import com.hjj.xiantao.model.domain.domain.PostImage;
+import com.hjj.xiantao.model.domain.PostImage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**

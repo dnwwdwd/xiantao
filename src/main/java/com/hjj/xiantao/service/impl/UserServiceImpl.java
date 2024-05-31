@@ -9,8 +9,10 @@ import com.hjj.xiantao.exception.BusinessException;
 import com.hjj.xiantao.mapper.UserMapper;
 import com.hjj.xiantao.model.domain.User;
 import com.hjj.xiantao.model.request.user.UserLoginRequest;
+import com.hjj.xiantao.model.request.user.UserQueryRequest;
 import com.hjj.xiantao.model.request.user.UserRegisterRequest;
 import com.hjj.xiantao.model.vo.SafetyUser;
+import com.hjj.xiantao.model.vo.UserVO;
 import com.hjj.xiantao.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -19,6 +21,11 @@ import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.hjj.xiantao.constant.UserConstant.USER_LOGIN_STATE;
 
 /**
 * @author 何佳骏
@@ -58,7 +65,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         // 4.返回脱敏 User
         SafetyUser safetyUser = new SafetyUser();
         BeanUtils.copyProperties(user, safetyUser);
-        request.getSession().setAttribute(UserConstant.USER_LOGIN_STATE, safetyUser);
+        request.getSession().setAttribute(USER_LOGIN_STATE, safetyUser);
         return safetyUser;
     }
 
@@ -94,6 +101,65 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
         return user.getId();
     }
+
+    @Override
+    public Boolean userLogout(HttpServletRequest request) {
+        User loginUser = this.getLoginUser(request);
+        if (loginUser == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN);
+        }
+        request.getSession().removeAttribute(USER_LOGIN_STATE);
+        return true;
+    }
+
+    @Override
+    public User getLoginUser(HttpServletRequest request) {
+        if (request == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Object obj = request.getSession().getAttribute(USER_LOGIN_STATE);
+        User loginUser = (User) obj;
+        if (loginUser == null || loginUser.getId() == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN);
+        }
+        loginUser = this.getById(loginUser.getId());
+        if (loginUser == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN);
+        }
+        return loginUser;
+    }
+
+    @Override
+    public List<UserVO> searchUsers(UserQueryRequest userQueryRequest, HttpServletRequest request) {
+        List<User> userList = this.list(getQueryWrapper(userQueryRequest));
+        List<UserVO> userVOList = userList.stream().map(UserVO::userToUserVO).collect(Collectors.toList());
+        return userVOList;
+    }
+
+
+    private QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest) {
+        String username = userQueryRequest.getUsername();
+        String userAccount = userQueryRequest.getUserAccount();
+        Integer gender = userQueryRequest.getGender();
+        String profile = userQueryRequest.getProfile();
+        String phone = userQueryRequest.getPhone();
+        String email = userQueryRequest.getEmail();
+        Integer userStatus = userQueryRequest.getUserStatus();
+        String orderName = userQueryRequest.getOrderName();
+        String asc = userQueryRequest.getAsc();
+
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like(StrUtil.isNotBlank(username), "username", username);
+        queryWrapper.eq(StrUtil.isNotBlank(userAccount), "userAccount", userAccount);
+        queryWrapper.eq(gender != null && gender >= 0, "gender", gender);
+        queryWrapper.like(StrUtil.isNotBlank(profile), "profile", profile);
+        queryWrapper.eq(StrUtil.isNotBlank(phone), "phone", phone);
+        queryWrapper.eq(StrUtil.isNotBlank(email), "email", email);
+        queryWrapper.eq(userStatus != null && userStatus >= 0, "userStatus", userStatus);
+        queryWrapper.orderBy(StrUtil.isNotBlank(orderName), "sc".equals(asc), orderName);
+        return queryWrapper;
+    }
+
 }
 
 

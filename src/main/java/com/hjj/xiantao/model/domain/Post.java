@@ -1,4 +1,4 @@
-package com.hjj.xiantao.model.domain.domain;
+package com.hjj.xiantao.model.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -9,12 +9,12 @@ import java.util.Date;
 import lombok.Data;
 
 /**
- * 帖子收藏
- * @TableName post_favour
+ * 帖子
+ * @TableName post
  */
-@TableName(value ="post_favour")
+@TableName(value ="post")
 @Data
-public class PostFavour implements Serializable {
+public class Post implements Serializable {
     /**
      * id
      */
@@ -22,9 +22,34 @@ public class PostFavour implements Serializable {
     private Long id;
 
     /**
-     * 帖子 id
+     * 标题
      */
-    private Long postId;
+    private String title;
+
+    /**
+     * 内容
+     */
+    private String content;
+
+    /**
+     * 标签列表（json 数组）
+     */
+    private String tags;
+
+    /**
+     * 价格
+     */
+    private Integer price;
+
+    /**
+     * 点赞数
+     */
+    private Integer thumbNum;
+
+    /**
+     * 收藏数
+     */
+    private Integer favourNum;
 
     /**
      * 创建用户 id
@@ -40,6 +65,11 @@ public class PostFavour implements Serializable {
      * 更新时间
      */
     private Date updateTime;
+
+    /**
+     * 是否删除
+     */
+    private Integer isDelete;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

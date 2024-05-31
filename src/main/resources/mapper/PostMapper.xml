@@ -4,11 +4,12 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hjj.xiantao.mapper.PostMapper">
 
-    <resultMap id="BaseResultMap" type="com.hjj.xiantao.model.domain.domain.Post">
+    <resultMap id="BaseResultMap" type="com.hjj.xiantao.model.domain.Post">
             <id property="id" column="id" jdbcType="BIGINT"/>
             <result property="title" column="title" jdbcType="VARCHAR"/>
             <result property="content" column="content" jdbcType="VARCHAR"/>
             <result property="tags" column="tags" jdbcType="VARCHAR"/>
+            <result property="price" column="price" jdbcType="INTEGER"/>
             <result property="thumbNum" column="thumbNum" jdbcType="INTEGER"/>
             <result property="favourNum" column="favourNum" jdbcType="INTEGER"/>
             <result property="userId" column="userId" jdbcType="BIGINT"/>
@@ -19,7 +20,7 @@
 
     <sql id="Base_Column_List">
         id,title,content,
-        tags,thumbNum,favourNum,
+        tags,price,thumbNum,favourNum,
         userId,createTime,updateTime,
         isDelete
     </sql>

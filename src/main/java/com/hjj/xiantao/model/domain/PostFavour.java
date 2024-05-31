@@ -1,4 +1,4 @@
-package com.hjj.xiantao.model.domain.domain;
+package com.hjj.xiantao.model.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -9,12 +9,12 @@ import java.util.Date;
 import lombok.Data;
 
 /**
- * 题目提交表
- * @TableName post_thumb
+ * 帖子收藏
+ * @TableName post_favour
  */
-@TableName(value ="post_thumb")
+@TableName(value ="post_favour")
 @Data
-public class PostThumb implements Serializable {
+public class PostFavour implements Serializable {
     /**
      * id
      */

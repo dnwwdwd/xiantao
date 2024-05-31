@@ -62,7 +62,7 @@ public class User implements Serializable {
     private String email;
 
     /**
-     * 状态 0 - 正常 1-禁止 2-封号
+     * 状态 0 - 正常 1 - 封号
      */
     private Integer userStatus;
 
@@ -84,7 +84,7 @@ public class User implements Serializable {
     /**
      * 用户角色 0 - 普通用户 1 - 管理员
      */
-    private Integer userRole;
+    private String userRole;
 
     /**
      * 爱好标签列表(json)

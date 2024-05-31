@@ -1,4 +1,4 @@
-package com.hjj.xiantao.model.domain.domain;
+package com.hjj.xiantao.model.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -9,12 +9,12 @@ import java.util.Date;
 import lombok.Data;
 
 /**
- * 帖子图片
- * @TableName post_image
+ * 题目提交表
+ * @TableName post_thumb
  */
-@TableName(value ="post_image")
+@TableName(value ="post_thumb")
 @Data
-public class PostImage implements Serializable {
+public class PostThumb implements Serializable {
     /**
      * id
      */
@@ -27,9 +27,9 @@ public class PostImage implements Serializable {
     private Long postId;
 
     /**
-     * 帖子的图片
+     * 创建用户 id
      */
-    private String url;
+    private Long userId;
 
     /**
      * 创建时间
