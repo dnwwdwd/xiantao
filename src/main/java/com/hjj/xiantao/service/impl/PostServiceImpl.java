@@ -20,6 +20,7 @@ import com.hjj.xiantao.model.vo.PostVO;
 import com.hjj.xiantao.model.vo.UserVO;
 import com.hjj.xiantao.service.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,9 +43,11 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
     private UserService userService;
 
     @Resource
+    @Lazy
     private PostThumbService postThumbService;
 
     @Resource
+    @Lazy
     private PostFavourService postFavourService;
 
     @Resource
@@ -55,9 +58,6 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
 
     @Resource
     private PostFavourMapper postFavourMapper;
-
-    @Resource
-    private PostImageMapper postImageMapper;
 
     @Resource
     private PostMapper postMapper;

@@ -5,12 +5,14 @@ import com.hjj.xiantao.common.BaseResponse;
 import com.hjj.xiantao.common.ErrorCode;
 import com.hjj.xiantao.common.ResultUtils;
 import com.hjj.xiantao.exception.BusinessException;
+import com.hjj.xiantao.model.domain.User;
 import com.hjj.xiantao.model.request.user.UserLoginRequest;
 import com.hjj.xiantao.model.request.user.UserQueryRequest;
 import com.hjj.xiantao.model.request.user.UserRegisterRequest;
 import com.hjj.xiantao.model.vo.SafetyUser;
 import com.hjj.xiantao.model.vo.UserVO;
 import com.hjj.xiantao.service.UserService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -67,6 +69,14 @@ public class UserController {
         }
         List<UserVO> userVOList= userService.searchUsers(userQueryRequest, request);
         return ResultUtils.success(userVOList);
+    }
+
+    @GetMapping("/get/login")
+    public BaseResponse<SafetyUser> getLoginUser(HttpServletRequest request) {
+        User loginUser = userService.getLoginUser(request);
+        SafetyUser safetyUser = new SafetyUser();
+        BeanUtils.copyProperties(loginUser, safetyUser);
+        return ResultUtils.success(safetyUser);
     }
 
 }

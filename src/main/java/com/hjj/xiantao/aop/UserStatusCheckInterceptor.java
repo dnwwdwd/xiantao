@@ -16,25 +16,25 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-@Component
-@Aspect
-public class UserStatusCheckInterceptor {
-
-    @Resource
-    private UserService userService;
-
-    @Before("execution(* com.hjj.xiantao.controller.*.*(..)) && " +
-            "!execution(* com.hjj.xiantao.controller.UserController.userLogin(..)) && " +
-            "!execution(* com.hjj.xiantao.controller.UserController.userRegister(..))")
-    public Object doInterceptor(ProceedingJoinPoint joinPoint) throws Throwable{
-        RequestAttributes requestAttributes = RequestContextHolder.currentRequestAttributes();
-        HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
-        User loginUser = userService.getLoginUser(request);
-        Integer userStatus = loginUser.getUserStatus();
-        UserStatusEnum enumByValue = UserStatusEnum.getEnumByValue(userStatus);
-        if (!UserStatusEnum.NORMAL.equals(enumByValue)) {
-            throw new BusinessException(ErrorCode.NO_AUTH);
-        }
-        return joinPoint.proceed();
-    }
-}
+//@Component
+//@Aspect
+//public class UserStatusCheckInterceptor {
+//
+//    @Resource
+//    private UserService userService;
+//
+//    @Before("execution(* com.hjj.xiantao.controller.*.*(..)) && " +
+//            "!execution(* com.hjj.xiantao.controller.UserController.userLogin(..)) && " +
+//            "!execution(* com.hjj.xiantao.controller.UserController.userRegister(..))")
+//    public Object doInterceptor(ProceedingJoinPoint joinPoint) throws Throwable{
+//        RequestAttributes requestAttributes = RequestContextHolder.currentRequestAttributes();
+//        HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
+//        User loginUser = userService.getLoginUser(request);
+//        Integer userStatus = loginUser.getUserStatus();
+//        UserStatusEnum enumByValue = UserStatusEnum.getEnumByValue(userStatus);
+//        if (!UserStatusEnum.NORMAL.equals(enumByValue)) {
+//            throw new BusinessException(ErrorCode.NO_AUTH);
+//        }
+//        return joinPoint.proceed();
+//    }
+//}

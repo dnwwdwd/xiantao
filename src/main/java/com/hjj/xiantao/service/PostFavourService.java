@@ -2,6 +2,9 @@ package com.hjj.xiantao.service;
 
 import com.hjj.xiantao.model.domain.PostFavour;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hjj.xiantao.model.request.postfavour.PostFavourRequest;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
 * @author 何佳骏
@@ -10,4 +13,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface PostFavourService extends IService<PostFavour> {
 
+    Boolean addPostFavour(PostFavourRequest postFavourRequest, HttpServletRequest request);
+    Boolean deletePostFavour(PostFavourRequest postFavourRequest, HttpServletRequest request);
 }

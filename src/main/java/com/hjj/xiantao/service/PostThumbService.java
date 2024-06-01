@@ -2,6 +2,9 @@ package com.hjj.xiantao.service;
 
 import com.hjj.xiantao.model.domain.PostThumb;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hjj.xiantao.model.request.posthumb.PostThumbRequest;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
 * @author 何佳骏
@@ -10,4 +13,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface PostThumbService extends IService<PostThumb> {
 
+    Boolean addPostThumb(PostThumbRequest postThumbRequest, HttpServletRequest request);
+
+    Boolean deletePostThumb(PostThumbRequest postThumbRequest, HttpServletRequest request);
 }
