@@ -27,7 +27,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/login")
-    public BaseResponse<SafetyUser> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
+    public BaseResponse<User> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
         if (userLoginRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -36,7 +36,7 @@ public class UserController {
         if (StrUtil.hasBlank(userAccount, userPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号或者密码为空");
         }
-        SafetyUser safetyUser = userService.userLogin(userLoginRequest, request);
+        User safetyUser = userService.userLogin(userLoginRequest, request);
         return ResultUtils.success(safetyUser);
     }
 

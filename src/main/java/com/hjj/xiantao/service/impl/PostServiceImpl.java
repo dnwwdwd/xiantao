@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -188,7 +189,94 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
         User loginUser = userService.getLoginUser(request);
         Page<Post> postPage = this.page(new Page<>(pageNum, pageSize));
         List<Post> postList = postPage.getRecords();
+        if (CollectionUtil.isEmpty(postList)) {
+            return new ArrayList<>();
+        }
+        List<PostVO> postVOList = postList.stream().map(post -> {
+            // 设置 PostVO
+            PostVO postVO = new PostVO();
+            Long postId = post.getId();
+            postVO.setId(postId);
+            postVO.setTitle(post.getTitle());
+            postVO.setContent(post.getContent());
+            postVO.setTags(post.getTags());
+            postVO.setPrice(post.getPrice());
 
+            // 构建查询条件
+            QueryWrapper<PostThumb> postThumbQueryWrapper = new QueryWrapper<>();
+            QueryWrapper<PostFavour> postFavourQueryWrapper = new QueryWrapper<>();
+            QueryWrapper<PostImage> postImageQueryWrapper = new QueryWrapper<>();
+
+            postThumbQueryWrapper.eq("postId", postId);
+            postFavourQueryWrapper.eq("postId", postId);
+            postImageQueryWrapper.eq("postId", postId);
+            // 查询帖子相关的点赞、收藏、图片
+            Long thumbNum = postThumbMapper.selectCount(postThumbQueryWrapper);
+            Long favourNum = postFavourMapper.selectCount(postFavourQueryWrapper);
+            List<PostImage> postImageList = postImageService.list(postImageQueryWrapper);
+            postVO.setThumbNum(thumbNum);
+            postVO.setFavourNum(favourNum);
+            postVO.setImages(JSONUtil.toJsonStr(postImageList));
+
+            // 设置帖子的创建者（UserVO）
+            User user = userService.getById(post.getUserId());
+            postVO.setUserVO(UserVO.userToUserVO(user));
+            return postVO;
+        }).collect(Collectors.toList());
+        return postVOList;
+    }
+
+    @Override
+    public List<PostVO> searchPost(PostQueryRequest postQueryRequest, HttpServletRequest request) {
+        long pageSize = postQueryRequest.getPageSize();
+        long pageNum = postQueryRequest.getPageNum();
+        Page<Post> postPage = this.page(new Page<>(pageNum, pageSize), getQueryWrapper(postQueryRequest));
+        List<PostVO> postVOList = postPage.getRecords().stream().map(post -> {
+            // 设置 PostVO
+            PostVO postVO = new PostVO();
+            Long postId = post.getId();
+            postVO.setId(postId);
+            postVO.setTitle(post.getTitle());
+            postVO.setContent(post.getContent());
+            postVO.setTags(post.getTags());
+            postVO.setPrice(post.getPrice());
+
+            // 构建查询条件
+            QueryWrapper<PostThumb> postThumbQueryWrapper = new QueryWrapper<>();
+            QueryWrapper<PostFavour> postFavourQueryWrapper = new QueryWrapper<>();
+            QueryWrapper<PostImage> postImageQueryWrapper = new QueryWrapper<>();
+
+            postThumbQueryWrapper.eq("postId", postId);
+            postFavourQueryWrapper.eq("postId", postId);
+            postImageQueryWrapper.eq("postId", postId);
+            // 查询帖子相关的点赞、收藏、图片
+            Long thumbNum = postThumbMapper.selectCount(postThumbQueryWrapper);
+            Long favourNum = postFavourMapper.selectCount(postFavourQueryWrapper);
+            List<PostImage> postImageList = postImageService.list(postImageQueryWrapper);
+            postVO.setThumbNum(thumbNum);
+            postVO.setFavourNum(favourNum);
+            postVO.setImages(JSONUtil.toJsonStr(postImageList));
+
+            // 设置帖子的创建者（UserVO）
+            User user = userService.getById(post.getUserId());
+            postVO.setUserVO(UserVO.userToUserVO(user));
+            return postVO;
+        }).collect(Collectors.toList());
+        return postVOList;
+
+    }
+
+    @Override
+    public List<PostVO> listMyPost(long pageNum, long pageSize, HttpServletRequest request) {
+        if (pageNum < 0 || pageSize < 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(request);
+        Long userId = loginUser.getId();
+        if (userId == null || userId <= 0) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN);
+        }
+        List<Post> postList = this.page(new Page<>(pageNum, pageSize)).getRecords();
         List<PostVO> postVOList = postList.stream().map(post -> {
             // 设置 PostVO
             PostVO postVO = new PostVO();
@@ -232,7 +320,8 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
 
         boolean b = (minPrice != null && maxPrice != null) && (maxPrice > 0 && minPrice <= maxPrice);
         QueryWrapper<Post> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(StrUtil.isNotBlank(searchParam), "searchParam", searchParam);
+        queryWrapper.and(StrUtil.isNotBlank(searchParam), qw1 -> qw1.like("content", searchParam)
+                .or(qw2 -> qw2.like("title", searchParam)));
         queryWrapper.between(b, "price", minPrice, maxPrice);
         queryWrapper.orderBy(StrUtil.isNotBlank(orderName), "asc".equals(asc), orderName);
         return queryWrapper;

@@ -21,6 +21,8 @@ public class UserQueryRequest extends PageRequest implements Serializable {
 
     private String email;
 
+    private String searchParam;
+
     /**
      * 状态 0 - 正常 1-禁止 2-封号
      */

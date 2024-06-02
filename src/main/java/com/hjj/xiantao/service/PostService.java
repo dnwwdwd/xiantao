@@ -4,6 +4,7 @@ import com.hjj.xiantao.model.domain.Post;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.hjj.xiantao.model.request.DeleteRequest;
 import com.hjj.xiantao.model.request.post.PostAddRequest;
+import com.hjj.xiantao.model.request.post.PostQueryRequest;
 import com.hjj.xiantao.model.vo.PostVO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,4 +24,8 @@ public interface PostService extends IService<Post> {
     Boolean deletePostByMySelf(DeleteRequest deleteRequest, HttpServletRequest request);
 
     List<PostVO> recommendPosts(long pageNum, long pageSize, HttpServletRequest request);
+
+    List<PostVO> searchPost(PostQueryRequest postQueryRequest, HttpServletRequest request);
+
+    List<PostVO> listMyPost(long pageNum, long pageSize, HttpServletRequest request);
 }

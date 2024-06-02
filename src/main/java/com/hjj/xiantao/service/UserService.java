@@ -1,11 +1,10 @@
 package com.hjj.xiantao.service;
 
-import com.hjj.xiantao.model.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hjj.xiantao.model.domain.User;
 import com.hjj.xiantao.model.request.user.UserLoginRequest;
 import com.hjj.xiantao.model.request.user.UserQueryRequest;
 import com.hjj.xiantao.model.request.user.UserRegisterRequest;
-import com.hjj.xiantao.model.vo.SafetyUser;
 import com.hjj.xiantao.model.vo.UserVO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,7 +17,7 @@ import java.util.List;
 */
 public interface UserService extends IService<User> {
 
-    SafetyUser userLogin(UserLoginRequest userLoginRequest, HttpServletRequest request);
+    User userLogin(UserLoginRequest userLoginRequest, HttpServletRequest request);
 
     Long userRegister(UserRegisterRequest userRegisterRequest, HttpServletRequest request);
 

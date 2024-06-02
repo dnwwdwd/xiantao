@@ -1,14 +1,17 @@
 package com.hjj.xiantao.service.impl;
 
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hjj.xiantao.common.ErrorCode;
 import com.hjj.xiantao.exception.BusinessException;
-import com.hjj.xiantao.model.domain.Post;
-import com.hjj.xiantao.model.domain.PostThumb;
-import com.hjj.xiantao.model.domain.User;
+import com.hjj.xiantao.mapper.PostFavourMapper;
+import com.hjj.xiantao.model.domain.*;
 import com.hjj.xiantao.model.request.posthumb.PostThumbRequest;
+import com.hjj.xiantao.model.vo.PostVO;
+import com.hjj.xiantao.model.vo.UserVO;
+import com.hjj.xiantao.service.PostImageService;
 import com.hjj.xiantao.service.PostService;
 import com.hjj.xiantao.service.PostThumbService;
 import com.hjj.xiantao.mapper.PostThumbMapper;
@@ -20,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
 * @author 何佳骏
@@ -36,6 +41,15 @@ public class PostThumbServiceImpl extends ServiceImpl<PostThumbMapper, PostThumb
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private PostThumbMapper postThumbMapper;
+
+    @Resource
+    private PostFavourMapper postFavourMapper;
+
+    @Resource
+    private PostImageService postImageService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -64,7 +78,7 @@ public class PostThumbServiceImpl extends ServiceImpl<PostThumbMapper, PostThumb
         }
         // 3.将帖子表的点赞数 +1
         UpdateWrapper<Post> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.setSql("thumbNum + 1");
+        updateWrapper.setSql("thumbNum = thumbNum + 1");
         updateWrapper.eq("id", postId);
         boolean update = postService.update(updateWrapper);
         if (!update) {
@@ -108,7 +122,7 @@ public class PostThumbServiceImpl extends ServiceImpl<PostThumbMapper, PostThumb
         }
         // 3.将帖子表的点赞数 -1
         UpdateWrapper<Post> postThumbUpdateWrapper = new UpdateWrapper<>();
-        postThumbUpdateWrapper.setSql("thumbNum - 1");
+        postThumbUpdateWrapper.setSql("thumbNum = thumbNum - 1");
         postThumbUpdateWrapper.eq("id", postId);
         boolean update = postService.update(postThumbUpdateWrapper);
         if (!update) {
@@ -123,6 +137,55 @@ public class PostThumbServiceImpl extends ServiceImpl<PostThumbMapper, PostThumb
             log.error("{}用户点赞{}帖子的点赞记录删除失败", userId, postId);
         }
         return update && remove;
+    }
+
+    @Override
+    public List<PostVO> listMyPostThumb(long pageNum, long pageSize, HttpServletRequest request) {
+        if (pageNum < 0 || pageSize < 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(request);
+        Long userId = loginUser.getId();
+        if (userId == null || userId <= 0) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN);
+        }
+        QueryWrapper<PostThumb> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("userId", userId);
+        List<PostThumb> postThumbList = this.list(queryWrapper);
+        List<Long> postIdList = postThumbList.stream().map(PostThumb::getPostId).collect(Collectors.toList());
+        List<Post> postList = postService.listByIds(postIdList);
+        List<PostVO> postVOList = postList.stream().map(post -> {
+            // 设置 PostVO
+            PostVO postVO = new PostVO();
+            Long postId = post.getId();
+            postVO.setId(postId);
+            postVO.setTitle(post.getTitle());
+            postVO.setContent(post.getContent());
+            postVO.setTags(post.getTags());
+            postVO.setPrice(post.getPrice());
+
+            // 构建查询条件
+            QueryWrapper<PostThumb> postThumbQueryWrapper = new QueryWrapper<>();
+            QueryWrapper<PostFavour> postFavourQueryWrapper = new QueryWrapper<>();
+            QueryWrapper<PostImage> postImageQueryWrapper = new QueryWrapper<>();
+
+            postThumbQueryWrapper.eq("postId", postId);
+            postFavourQueryWrapper.eq("postId", postId);
+            postImageQueryWrapper.eq("postId", postId);
+            // 查询帖子相关的点赞、收藏、图片
+            Long thumbNum = postThumbMapper.selectCount(postThumbQueryWrapper);
+            Long favourNum = postFavourMapper.selectCount(postFavourQueryWrapper);
+            List<PostImage> postImageList = postImageService.list(postImageQueryWrapper);
+            postVO.setThumbNum(thumbNum);
+            postVO.setFavourNum(favourNum);
+            postVO.setImages(JSONUtil.toJsonStr(postImageList));
+
+            // 设置帖子的创建者（UserVO）
+            User user = userService.getById(post.getUserId());
+            postVO.setUserVO(UserVO.userToUserVO(user));
+            return postVO;
+        }).collect(Collectors.toList());
+        return postVOList;
     }
 }
 

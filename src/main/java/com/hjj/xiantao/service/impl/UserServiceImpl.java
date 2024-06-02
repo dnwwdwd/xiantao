@@ -2,6 +2,7 @@ package com.hjj.xiantao.service.impl;
 
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hjj.xiantao.common.ErrorCode;
 import com.hjj.xiantao.constant.UserConstant;
@@ -42,7 +43,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     public static final String SALT = "hejiajun";
     @Override
-    public SafetyUser userLogin(UserLoginRequest userLoginRequest, HttpServletRequest request) {
+    public User userLogin(UserLoginRequest userLoginRequest, HttpServletRequest request) {
         String userAccount = userLoginRequest.getUserAccount();
         String userPassword = userLoginRequest.getUserPassword();
         // 1.校验参数
@@ -63,8 +64,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号或密码不正确");
         }
         // 4.返回脱敏 User
-        SafetyUser safetyUser = new SafetyUser();
-        BeanUtils.copyProperties(user, safetyUser);
+        User safetyUser = new User();
+        safetyUser.setId(user.getId());
+        safetyUser.setUsername(user.getUsername());
+        safetyUser.setUserAccount(user.getUserAccount());
+        safetyUser.setAvatarUrl(user.getAvatarUrl());
+        safetyUser.setGender(user.getGender());
+        safetyUser.setProfile(user.getProfile());
+        safetyUser.setPhone(user.getPhone());
+        safetyUser.setEmail(user.getEmail());
+        safetyUser.setUserStatus(user.getUserStatus());
+        safetyUser.setUserRole(user.getUserRole());
+        safetyUser.setLikedTags(user.getLikedTags());
         request.getSession().setAttribute(USER_LOGIN_STATE, safetyUser);
         return safetyUser;
     }
@@ -131,13 +142,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     @Override
     public List<UserVO> searchUsers(UserQueryRequest userQueryRequest, HttpServletRequest request) {
-        List<User> userList = this.list(getQueryWrapper(userQueryRequest));
-        List<UserVO> userVOList = userList.stream().map(UserVO::userToUserVO).collect(Collectors.toList());
+        Page<User> userPage = this.page(new Page<>(userQueryRequest.getPageNum(),
+                userQueryRequest.getPageSize()), getQueryWrapper(userQueryRequest));
+        List<UserVO> userVOList = userPage.getRecords().stream().map(UserVO::userToUserVO).collect(Collectors.toList());
         return userVOList;
     }
 
 
     private QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest) {
+        String searchParam = userQueryRequest.getSearchParam();
         String username = userQueryRequest.getUsername();
         String userAccount = userQueryRequest.getUserAccount();
         Integer gender = userQueryRequest.getGender();
@@ -156,7 +169,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         queryWrapper.eq(StrUtil.isNotBlank(phone), "phone", phone);
         queryWrapper.eq(StrUtil.isNotBlank(email), "email", email);
         queryWrapper.eq(userStatus != null && userStatus >= 0, "userStatus", userStatus);
-        queryWrapper.orderBy(StrUtil.isNotBlank(orderName), "sc".equals(asc), orderName);
+        queryWrapper.orderBy(StrUtil.isNotBlank(orderName), "asc".equals(asc), orderName);
         return queryWrapper;
     }
 
