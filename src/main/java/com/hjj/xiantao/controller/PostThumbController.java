@@ -45,4 +45,5 @@ public class PostThumbController {
         List<PostVO> postVOList = postThumbService.listMyPostThumb(pageNum, pageSize, request);
         return ResultUtils.success(postVOList);
     }
+
 }
