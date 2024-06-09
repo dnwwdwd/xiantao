@@ -9,7 +9,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hjj.xiantao.common.ErrorCode;
 import com.hjj.xiantao.exception.BusinessException;
 import com.hjj.xiantao.mapper.PostFavourMapper;
-import com.hjj.xiantao.mapper.PostImageMapper;
 import com.hjj.xiantao.mapper.PostMapper;
 import com.hjj.xiantao.mapper.PostThumbMapper;
 import com.hjj.xiantao.model.domain.*;
