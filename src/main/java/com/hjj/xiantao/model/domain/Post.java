@@ -37,6 +37,11 @@ public class Post implements Serializable {
     private String tags;
 
     /**
+     * 图片列表
+     */
+    private String images;
+
+    /**
      * 价格
      */
     private Integer price;
