@@ -2,6 +2,7 @@ package com.hjj.xiantao.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSON;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,8 +70,9 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
         User loginUser = userService.getLoginUser(request);
         String title = postAddRequest.getTitle();
         String content = postAddRequest.getContent();
-        Integer price = postAddRequest.getPrice();
+        BigDecimal price = postAddRequest.getPrice();
         List<String> tags = postAddRequest.getTags();
+        List<String> images = postAddRequest.getImages();
         Long userId = loginUser.getId();
         // 1.校验参数
         if (StrUtil.hasBlank(title, content)) {
@@ -78,7 +81,13 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
         if (CollectionUtil.isEmpty(tags)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "请至少选择一个标签");
         }
-        if (price == null || price <= 0) {
+        if (CollectionUtil.isEmpty(images)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请至少上传一个图片");
+        }
+        if (images.size() > 20) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "最多上传 20 张照片");
+        }
+        if (price == null || price.compareTo(BigDecimal.ZERO) <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "价格必须大于 0");
         }
         // 2.对 tags 集合进行拼接
@@ -91,11 +100,23 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
             }
         }
         tagsStringBuffer.append("]");
-        // 3.插入数据库
+        // 3.对 images 集合进行拼接
+        StringBuffer imagesStringBuffer = new StringBuffer();
+        imagesStringBuffer.append("[");
+        for (int i = 0; i < images.size(); i++) {
+            imagesStringBuffer.append('"').append(images.get(i)).append('"');
+            if (i < images.size() - 1) {
+                imagesStringBuffer.append(',');
+            }
+        }
+        imagesStringBuffer.append("]");
+        // 4.插入数据库
         Post post = new Post();
         post.setTitle(title);
         post.setContent(content);
         post.setTags(tagsStringBuffer.toString());
+        post.setImages(imagesStringBuffer.toString());
+        post.setPrice(price);
         post.setUserId(userId);
         boolean save = this.save(post);
         if (!save) {
@@ -198,24 +219,21 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
             postVO.setId(postId);
             postVO.setTitle(post.getTitle());
             postVO.setContent(post.getContent());
-            postVO.setTags(post.getTags());
+            postVO.setTags(JSONUtil.toList(post.getTags(), String.class));
             postVO.setPrice(post.getPrice());
+            postVO.setImages(JSONUtil.toList(post.getImages(), String.class));
 
             // 构建查询条件
             QueryWrapper<PostThumb> postThumbQueryWrapper = new QueryWrapper<>();
             QueryWrapper<PostFavour> postFavourQueryWrapper = new QueryWrapper<>();
-            QueryWrapper<PostImage> postImageQueryWrapper = new QueryWrapper<>();
 
             postThumbQueryWrapper.eq("postId", postId);
             postFavourQueryWrapper.eq("postId", postId);
-            postImageQueryWrapper.eq("postId", postId);
             // 查询帖子相关的点赞、收藏、图片
             Long thumbNum = postThumbMapper.selectCount(postThumbQueryWrapper);
             Long favourNum = postFavourMapper.selectCount(postFavourQueryWrapper);
-            List<PostImage> postImageList = postImageService.list(postImageQueryWrapper);
             postVO.setThumbNum(thumbNum);
             postVO.setFavourNum(favourNum);
-            postVO.setImages(JSONUtil.toJsonStr(postImageList));
 
             // 设置帖子的创建者（UserVO）
             User user = userService.getById(post.getUserId());
@@ -237,7 +255,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
             postVO.setId(postId);
             postVO.setTitle(post.getTitle());
             postVO.setContent(post.getContent());
-            postVO.setTags(post.getTags());
+            postVO.setTags(JSONUtil.toList(post.getTags(), String.class));
             postVO.setPrice(post.getPrice());
 
             // 构建查询条件
@@ -247,14 +265,12 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
 
             postThumbQueryWrapper.eq("postId", postId);
             postFavourQueryWrapper.eq("postId", postId);
-            postImageQueryWrapper.eq("postId", postId);
             // 查询帖子相关的点赞、收藏、图片
             Long thumbNum = postThumbMapper.selectCount(postThumbQueryWrapper);
             Long favourNum = postFavourMapper.selectCount(postFavourQueryWrapper);
-            List<PostImage> postImageList = postImageService.list(postImageQueryWrapper);
             postVO.setThumbNum(thumbNum);
             postVO.setFavourNum(favourNum);
-            postVO.setImages(JSONUtil.toJsonStr(postImageList));
+            postVO.setImages(JSONUtil.toList(post.getImages(), String.class));
 
             // 设置帖子的创建者（UserVO）
             User user = userService.getById(post.getUserId());
@@ -283,24 +299,21 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
             postVO.setId(postId);
             postVO.setTitle(post.getTitle());
             postVO.setContent(post.getContent());
-            postVO.setTags(post.getTags());
+            postVO.setTags(JSONUtil.toList(post.getTags(), String.class));
             postVO.setPrice(post.getPrice());
 
             // 构建查询条件
             QueryWrapper<PostThumb> postThumbQueryWrapper = new QueryWrapper<>();
             QueryWrapper<PostFavour> postFavourQueryWrapper = new QueryWrapper<>();
-            QueryWrapper<PostImage> postImageQueryWrapper = new QueryWrapper<>();
 
             postThumbQueryWrapper.eq("postId", postId);
             postFavourQueryWrapper.eq("postId", postId);
-            postImageQueryWrapper.eq("postId", postId);
             // 查询帖子相关的点赞、收藏、图片
             Long thumbNum = postThumbMapper.selectCount(postThumbQueryWrapper);
             Long favourNum = postFavourMapper.selectCount(postFavourQueryWrapper);
-            List<PostImage> postImageList = postImageService.list(postImageQueryWrapper);
             postVO.setThumbNum(thumbNum);
             postVO.setFavourNum(favourNum);
-            postVO.setImages(JSONUtil.toJsonStr(postImageList));
+            postVO.setImages(JSONUtil.toList(post.getImages(), String.class));
 
             // 设置帖子的创建者（UserVO）
             User user = userService.getById(post.getUserId());

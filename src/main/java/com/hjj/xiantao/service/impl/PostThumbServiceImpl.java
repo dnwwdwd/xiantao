@@ -161,7 +161,7 @@ public class PostThumbServiceImpl extends ServiceImpl<PostThumbMapper, PostThumb
             postVO.setId(postId);
             postVO.setTitle(post.getTitle());
             postVO.setContent(post.getContent());
-            postVO.setTags(post.getTags());
+            postVO.setTags(JSONUtil.toList(post.getTags(), String.class));
             postVO.setPrice(post.getPrice());
 
             // 构建查询条件
@@ -178,7 +178,7 @@ public class PostThumbServiceImpl extends ServiceImpl<PostThumbMapper, PostThumb
             List<PostImage> postImageList = postImageService.list(postImageQueryWrapper);
             postVO.setThumbNum(thumbNum);
             postVO.setFavourNum(favourNum);
-            postVO.setImages(JSONUtil.toJsonStr(postImageList));
+            postVO.setTags(JSONUtil.toList(post.getTags(), String.class));
 
             // 设置帖子的创建者（UserVO）
             User user = userService.getById(post.getUserId());

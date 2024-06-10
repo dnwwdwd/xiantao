@@ -10,7 +10,7 @@
             <result property="content" column="content" jdbcType="VARCHAR"/>
             <result property="tags" column="tags" jdbcType="VARCHAR"/>
             <result property="images" column="images" jdbcType="VARCHAR"/>
-            <result property="price" column="price" jdbcType="INTEGER"/>
+            <result property="price" column="price" jdbcType="DECIMAL"/>
             <result property="thumbNum" column="thumbNum" jdbcType="INTEGER"/>
             <result property="favourNum" column="favourNum" jdbcType="INTEGER"/>
             <result property="userId" column="userId" jdbcType="BIGINT"/>

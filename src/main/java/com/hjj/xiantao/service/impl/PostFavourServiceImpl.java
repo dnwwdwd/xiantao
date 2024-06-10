@@ -161,24 +161,21 @@ public class PostFavourServiceImpl extends ServiceImpl<PostFavourMapper, PostFav
             postVO.setId(postId);
             postVO.setTitle(post.getTitle());
             postVO.setContent(post.getContent());
-            postVO.setTags(post.getTags());
+            postVO.setTags(JSONUtil.toList(post.getTags(), String.class));
             postVO.setPrice(post.getPrice());
 
             // 构建查询条件
             QueryWrapper<PostThumb> postThumbQueryWrapper = new QueryWrapper<>();
             QueryWrapper<PostFavour> postFavourQueryWrapper = new QueryWrapper<>();
-            QueryWrapper<PostImage> postImageQueryWrapper = new QueryWrapper<>();
 
             postThumbQueryWrapper.eq("postId", postId);
             postFavourQueryWrapper.eq("postId", postId);
-            postImageQueryWrapper.eq("postId", postId);
             // 查询帖子相关的点赞、收藏、图片
             Long thumbNum = postThumbMapper.selectCount(postThumbQueryWrapper);
             Long favourNum = postFavourMapper.selectCount(postFavourQueryWrapper);
-            List<PostImage> postImageList = postImageService.list(postImageQueryWrapper);
             postVO.setThumbNum(thumbNum);
             postVO.setFavourNum(favourNum);
-            postVO.setImages(JSONUtil.toJsonStr(postImageList));
+            postVO.setImages(JSONUtil.toList(post.getImages(), String.class));
 
             // 设置帖子的创建者（UserVO）
             User user = userService.getById(post.getUserId());

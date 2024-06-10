@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
 
@@ -44,7 +45,7 @@ public class Post implements Serializable {
     /**
      * 价格
      */
-    private Integer price;
+    private BigDecimal price;
 
     /**
      * 点赞数

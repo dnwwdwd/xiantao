@@ -3,6 +3,8 @@ package com.hjj.xiantao.model.vo;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class PostVO implements Serializable {
@@ -13,11 +15,11 @@ public class PostVO implements Serializable {
 
     private String content;
 
-    private String tags;
+    private List<String> tags;
 
-    private String images;
+    private List<String> images;
 
-    private Integer price;
+    private BigDecimal price;
 
     private Long thumbNum;
 
