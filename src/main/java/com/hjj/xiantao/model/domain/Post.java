@@ -50,12 +50,12 @@ public class Post implements Serializable {
     /**
      * 点赞数
      */
-    private Integer thumbNum;
+    private Long thumbNum;
 
     /**
      * 收藏数
      */
-    private Integer favourNum;
+    private Long favourNum;
 
     /**
      * 创建用户 id

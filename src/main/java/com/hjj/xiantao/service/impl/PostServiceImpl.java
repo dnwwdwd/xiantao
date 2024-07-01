@@ -13,6 +13,7 @@ import com.hjj.xiantao.mapper.PostFavourMapper;
 import com.hjj.xiantao.mapper.PostMapper;
 import com.hjj.xiantao.mapper.PostThumbMapper;
 import com.hjj.xiantao.model.domain.*;
+import com.hjj.xiantao.model.enums.UserRoleEnum;
 import com.hjj.xiantao.model.request.DeleteRequest;
 import com.hjj.xiantao.model.request.post.PostAddRequest;
 import com.hjj.xiantao.model.request.post.PostQueryRequest;
@@ -51,15 +52,6 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
     @Resource
     @Lazy
     private PostFavourService postFavourService;
-
-    @Resource
-    private PostImageService postImageService;
-
-    @Resource
-    private PostThumbMapper postThumbMapper;
-
-    @Resource
-    private PostFavourMapper postFavourMapper;
 
     @Resource
     private PostMapper postMapper;
@@ -134,7 +126,12 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
         if (id == null || id <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        // 2.查找帖子相关的点赞，收藏和图片
+        // 2.判断是否管理员
+        if (loginUser.getUserRole() == null || !UserRoleEnum.ADMIN
+                .equals(UserRoleEnum.getEnumByValue(loginUser.getUserRole()))) {
+            throw new BusinessException(ErrorCode.FORBIDDEN, "非管理员不可删除文章");
+        }
+        // 3.查找帖子相关的点赞，收藏和图片
         QueryWrapper<PostThumb> postThumbQueryWrapper = new QueryWrapper<>();
         QueryWrapper<PostFavour> postFavourQueryWrapper = new QueryWrapper<>();
         QueryWrapper<PostImage> postImageQueryWrapper = new QueryWrapper<>();
@@ -147,22 +144,15 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
         List<Long> postFavourIdList = postFavourService.list(postFavourQueryWrapper)
                 .stream().map(PostFavour::getId)
                 .collect(Collectors.toList());
-        List<Long> postImageIdList = postImageService.list(postImageQueryWrapper)
-                .stream().map(PostImage::getId)
-                .collect(Collectors.toList());
         boolean b1 = postThumbService.removeByIds(postThumbIdList, CollectionUtil.isNotEmpty(postThumbIdList));
         boolean b2 = postFavourService.removeByIds(postFavourIdList, CollectionUtil.isNotEmpty(postFavourIdList));
-        boolean b3 = postImageService.removeByIds(postImageIdList, CollectionUtil.isNotEmpty(postImageIdList));
         if (!b1) {
             log.info("{}帖子相关点赞删除失败", id);
         }
         if (!b2) {
             log.info("{}帖子相关收藏删除失败", id);
         }
-        if (!b3) {
-            log.info("{}帖子相关图片删除失败", id);
-        }
-        return b1 && b2 && b3;
+        return b1 && b2;
     }
 
     @Override
@@ -230,10 +220,8 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
             postThumbQueryWrapper.eq("postId", postId);
             postFavourQueryWrapper.eq("postId", postId);
             // 查询帖子相关的点赞、收藏、图片
-            Long thumbNum = postThumbMapper.selectCount(postThumbQueryWrapper);
-            Long favourNum = postFavourMapper.selectCount(postFavourQueryWrapper);
-            postVO.setThumbNum(thumbNum);
-            postVO.setFavourNum(favourNum);
+            postVO.setThumbNum(post.getThumbNum());
+            postVO.setFavourNum(post.getFavourNum());
 
             // 设置帖子的创建者（UserVO）
             User user = userService.getById(post.getUserId());
@@ -266,10 +254,8 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
             postThumbQueryWrapper.eq("postId", postId);
             postFavourQueryWrapper.eq("postId", postId);
             // 查询帖子相关的点赞、收藏、图片
-            Long thumbNum = postThumbMapper.selectCount(postThumbQueryWrapper);
-            Long favourNum = postFavourMapper.selectCount(postFavourQueryWrapper);
-            postVO.setThumbNum(thumbNum);
-            postVO.setFavourNum(favourNum);
+            postVO.setThumbNum(post.getThumbNum());
+            postVO.setFavourNum(post.getFavourNum());
             postVO.setImages(JSONUtil.toList(post.getImages(), String.class));
 
             // 设置帖子的创建者（UserVO）
@@ -309,10 +295,8 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
             postThumbQueryWrapper.eq("postId", postId);
             postFavourQueryWrapper.eq("postId", postId);
             // 查询帖子相关的点赞、收藏、图片
-            Long thumbNum = postThumbMapper.selectCount(postThumbQueryWrapper);
-            Long favourNum = postFavourMapper.selectCount(postFavourQueryWrapper);
-            postVO.setThumbNum(thumbNum);
-            postVO.setFavourNum(favourNum);
+            postVO.setThumbNum(post.getThumbNum());
+            postVO.setFavourNum(post.getFavourNum());
             postVO.setImages(JSONUtil.toList(post.getImages(), String.class));
 
             // 设置帖子的创建者（UserVO）
