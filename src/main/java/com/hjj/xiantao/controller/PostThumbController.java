@@ -46,5 +46,4 @@ public class PostThumbController {
         return ResultUtils.success(postVOList);
     }
 
-
 }

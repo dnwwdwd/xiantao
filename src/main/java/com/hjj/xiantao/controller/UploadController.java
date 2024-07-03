@@ -24,4 +24,5 @@ public class UploadController {
         System.out.println(imageUrl);
         return ResultUtils.success(imageUrl);
     }
+
 }
