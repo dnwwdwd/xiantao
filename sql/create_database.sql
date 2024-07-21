@@ -3,7 +3,7 @@ create database if not exists xiantao;
 use xiantao;
 
 -- 用户表
-create table xiantao.user
+create table  xiantao.user
 (
     id           bigint auto_increment comment 'id'
         primary key,

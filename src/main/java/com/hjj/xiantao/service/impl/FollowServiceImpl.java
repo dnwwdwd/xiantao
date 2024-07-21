@@ -4,12 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hjj.xiantao.common.ErrorCode;
 import com.hjj.xiantao.exception.BusinessException;
+import com.hjj.xiantao.mapper.FollowMapper;
 import com.hjj.xiantao.model.domain.Follow;
 import com.hjj.xiantao.model.domain.User;
-import com.hjj.xiantao.model.request.DeleteRequest;
 import com.hjj.xiantao.model.request.follow.FollowRequest;
 import com.hjj.xiantao.service.FollowService;
-import com.hjj.xiantao.mapper.FollowMapper;
 import com.hjj.xiantao.service.UserService;
 import org.springframework.stereotype.Service;
 
@@ -82,9 +81,6 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow>
         // 3.删除关系
         boolean remove = this.remove(queryWrapper);
         return remove;
+
     }
 }
-
-
-
-

@@ -4,7 +4,6 @@ import com.hjj.xiantao.common.BaseResponse;
 import com.hjj.xiantao.common.ErrorCode;
 import com.hjj.xiantao.common.ResultUtils;
 import com.hjj.xiantao.exception.BusinessException;
-import com.hjj.xiantao.model.request.DeleteRequest;
 import com.hjj.xiantao.model.request.follow.FollowRequest;
 import com.hjj.xiantao.service.FollowService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,5 +36,6 @@ public class FollowController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Boolean b = followService.deleteFollow(followRequest, request);
+        return ResultUtils.success(b);
     }
 }
