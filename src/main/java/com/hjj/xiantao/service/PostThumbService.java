@@ -20,4 +20,5 @@ public interface PostThumbService extends IService<PostThumb> {
     Boolean deletePostThumb(PostThumbRequest postThumbRequest, HttpServletRequest request);
 
     List<PostVO> listMyPostThumb(long pageNum, long pageSize, HttpServletRequest request);
+
 }
