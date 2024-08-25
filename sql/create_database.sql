@@ -3,7 +3,7 @@ create database if not exists xiantao;
 use xiantao;
 
 -- 用户表
-create table  xiantao.user
+create table xiantao.user
 (
     id           bigint auto_increment comment 'id'
         primary key,
@@ -24,68 +24,43 @@ create table  xiantao.user
 )
     comment '用户';
 
+-- 商品表
+create table xiantao.good
+(
+    id           bigint auto_increment comment 'id'
+        primary key,
+    description  varchar(2048)                      null comment '描述',
+    images       varchar(1024)                      null comment '图片列表（json数组）',
+    price        decimal                            null comment '价格',
+    deliveryType int      default 0                 not null comment '运送类型（0 - 不包邮 1 - 包邮 2- 自提）',
+    tags         varchar(256)                       null comment '标签（json数组）',
+    userId       bigint                             null comment '用户id',
+    brand        varchar(64)                        null comment '品牌',
+    `condition`  tinyint                            null comment '成色',
+    goodStatus   varchar(128)                       null comment '表示商品的状态（完美、有损耗）',
+    viewNum      bigint   default 0                 not null comment '浏览数',
+    exposureNum  bigint   default 0                 not null comment '曝光数',
+    wantNum      int                                null comment '想要数',
+    starNum      int                                null comment '收藏数',
+    type         int                                null comment '商品类型（ 0- 数码 1- 零食 2 - 家具 3 - 图书 4 - 汽车 5 - 衣服）',
+    status       tinyint  default 0                 not null comment '上架状态（0 - 上架 1 - 下架）',
+    createTime   datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    updateTime   datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '修改时间',
+    isDelete     tinyint  default 0                 not null comment '是否删除'
+);
 
 
-
--- 帖子表
-create table xiantao.post
+-- 订单表
+create table xiantao.`order`
 (
     id         bigint auto_increment comment 'id'
         primary key,
-    title      varchar(512)                       null comment '标题',
-    content    text                               null comment '内容',
-    tags       varchar(1024)                      null comment '标签列表（json 数组）',
-    price      int                                not null comment '价格',
-    thumbNum   int      default 0                 not null comment '点赞数',
-    favourNum  int      default 0                 not null comment '收藏数',
-    userId     bigint                             not null comment '创建用户 id',
+    goodId     bigint                             null comment '商品id',
+    userId     bigint                             null comment '用户id',
+    type       tinyint                            null comment '类型（0 - 已购买的订单 1 - 已卖出的订单）',
     createTime datetime default CURRENT_TIMESTAMP not null comment '创建时间',
-    updateTime datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    updateTime datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '修改时间',
     isDelete   tinyint  default 0                 not null comment '是否删除'
 )
-    comment '帖子' collate = utf8mb4_unicode_ci;
+    comment '订单表';
 
-create index idx_userId
-    on xiantao.post (userId);
-
-
-
-
--- 帖子点赞表（硬删除）
-create table if not exists xiantao.post_thumb
-(
-    id         bigint auto_increment comment 'id' primary key,
-    postId     bigint                             not null comment '帖子 id',
-    userId     bigint                             not null comment '创建用户 id',
-    createTime datetime default CURRENT_TIMESTAMP not null comment '创建时间',
-    updateTime datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
-    index idx_postId (postId),
-    index idx_userId (userId)
-) comment '题目提交表';
-
-
--- 帖子收藏表（硬删除）
-create table if not exists xiantao.post_favour
-(
-    id         bigint auto_increment comment 'id' primary key,
-    postId     bigint                             not null comment '帖子 id',
-    userId     bigint                             not null comment '创建用户 id',
-    createTime datetime default CURRENT_TIMESTAMP not null comment '创建时间',
-    updateTime datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
-    index idx_postId (postId),
-    index idx_userId (userId)
-) comment '帖子收藏';
-
-
--- 帖子图片表（硬删除）
-create table if not exists xiantao.post_image
-(
-    id         bigint auto_increment comment 'id' primary key,
-    postId     bigint                             not null comment '帖子 id',
-    userId     bigint                             not null comment '创建用户 id',
-    url        varchar(1024)                      not null comment '帖子的图片',
-    createTime datetime default CURRENT_TIMESTAMP not null comment '创建时间',
-    updateTime datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
-    index idx_postId (postId),
-    index idx_userId (userId)
-) comment '帖子图片';
